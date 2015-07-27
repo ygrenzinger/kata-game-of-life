@@ -1,7 +1,8 @@
 package gameoflife;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static gameoflife.CellState.ALIVE;
 import static gameoflife.CellState.DEAD;
@@ -9,82 +10,59 @@ import static gameoflife.CellState.DEAD;
 public class GameOfLifeGrid {
 
 
-    private final CellState[][] grid;
+    private final HashSet<Position> aliveCells;
 
-    private GameOfLifeGrid(CellState[][] grid) {
-        this.grid = grid;
-    }
-
-    public static GameOfLifeGrid emptyGrid(int size) {
-        return createGrid(DEAD, size);
-    }
-
-    private static GameOfLifeGrid createGrid(CellState state, int size) {
-        CellState[][] newGrid = new CellState[size][size];
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                newGrid[i][j] = state;
-            }
-        }
-        return new GameOfLifeGrid(newGrid);
+    private GameOfLifeGrid(HashSet<Position> aliveCells) {
+        this.aliveCells = aliveCells;
     }
 
     public void makeAlive(Position position) {
-        grid[position.getRow()][position.getColumn()] = ALIVE;
+        aliveCells.add(position);
     }
 
-    public CellState cellAt(Position position) {
-        return grid[position.getRow()][position.getColumn()];
+    public CellState cellStateAt(Position position) {
+        return aliveCells.contains(position) ? ALIVE : DEAD;
     }
 
-    public static GameOfLifeGrid fullGrid() {
-        return createGrid(ALIVE, 3);
+    public static GameOfLifeGrid emptyGrid() {
+        return new GameOfLifeGrid(new HashSet<>());
     }
 
-
-
-    public long neighbourCount(Position position) {
-        return buildNeigbours(position.getRow(), position.getColumn()).stream().filter(cellState -> cellState == ALIVE).count();
-    }
-
-    private List<CellState> buildNeigbours(int row, int column) {
-        List<CellState> cells = new ArrayList<>();
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (!(i == 0 && j == 0)) {
-                    cells.add(grid[row+i][column+j]);
-                }
+    public static GameOfLifeGrid fullGrid(int size) {
+        HashSet<Position> cells = new HashSet<>();
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                cells.add(new Position(row, column));
             }
         }
-        return cells;
+        return new GameOfLifeGrid(cells);
+    }
+
+    public long neighbourCount(Position position) {
+        return aliveCells.stream().sorted(new CloserToPosComparator(position))
+                .filter(p -> !p.equals(position))
+                .filter(p -> p.distanceTo(position) == 1).count();
     }
 
     public GameOfLifeGrid nextGeneration() {
-        GameOfLifeGrid newGen = copy();
-        for (int i = 1; i < grid.length-1; i++) {
+        GameOfLifeGrid newGen = emptyGrid();
 
-            for (int j = 1; j < grid.length-1; j++) {
-                long count =   this.neighbourCount(new Position(i, j));
-                newGen.grid[i][j] = this.grid[i][j].nextGeneration(count);
+        for (Position position : aliveCells) {
+            long count = neighbourCount(position);
+            if (ALIVE.nextGeneration(count) == ALIVE) {
+                newGen.makeAlive(position);
+            }
+            if (count == 2) {
+                List<Position> ressurectedCells = position.buildNeigbours().stream()
+                        .filter(p -> !aliveCells.contains(p))
+                        .filter(p -> {
+                            long nb = neighbourCount(p);
+                            return nb == 3;
+                        }).collect(Collectors.toList());
+                ressurectedCells.stream().forEach(newGen::makeAlive);
             }
         }
+
         return newGen;
-    }
-
-    private GameOfLifeGrid copy() {
-        GameOfLifeGrid copy = emptyGrid(grid.length);
-        copyRows(copy);
-        return copy;
-    }
-
-    private void copyRows(GameOfLifeGrid copy) {
-        for (int i = 0; i < grid.length; i++) {
-            copyColumns(copy, i);
-        }
-    }
-
-    private void copyColumns(GameOfLifeGrid copy, int row) {
-        System.arraycopy(grid[row], 0, copy.grid[row], 0, grid[row].length);
     }
 }
