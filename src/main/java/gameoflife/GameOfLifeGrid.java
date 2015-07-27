@@ -11,7 +11,7 @@ public class GameOfLifeGrid {
 
     private final CellState[][] grid;
 
-    public GameOfLifeGrid(CellState[][] grid) {
+    private GameOfLifeGrid(CellState[][] grid) {
         this.grid = grid;
     }
 
@@ -30,12 +30,12 @@ public class GameOfLifeGrid {
         return new GameOfLifeGrid(newGrid);
     }
 
-    public void makeAlive(int row, int column) {
-        grid[row][column] = ALIVE;
+    public void makeAlive(Position position) {
+        grid[position.getRow()][position.getColumn()] = ALIVE;
     }
 
-    public CellState cellAt(int row, int column) {
-        return grid[row][column];
+    public CellState cellAt(Position position) {
+        return grid[position.getRow()][position.getColumn()];
     }
 
     public static GameOfLifeGrid fullGrid() {
@@ -44,8 +44,8 @@ public class GameOfLifeGrid {
 
 
 
-    public long neighbourCount(int row, int column) {
-        return buildNeigbours(row, column).stream().filter(cellState -> cellState == ALIVE).count();
+    public long neighbourCount(Position position) {
+        return buildNeigbours(position.getRow(), position.getColumn()).stream().filter(cellState -> cellState == ALIVE).count();
     }
 
     private List<CellState> buildNeigbours(int row, int column) {
@@ -65,7 +65,7 @@ public class GameOfLifeGrid {
         for (int i = 1; i < grid.length-1; i++) {
 
             for (int j = 1; j < grid.length-1; j++) {
-                long count =   this.neighbourCount(i, j);
+                long count =   this.neighbourCount(new Position(i, j));
                 newGen.grid[i][j] = this.grid[i][j].nextGeneration(count);
             }
         }

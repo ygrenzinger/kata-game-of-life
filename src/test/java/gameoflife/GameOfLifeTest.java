@@ -69,65 +69,65 @@ public class GameOfLifeTest {
     //count neighbour of a cell in a grid
     @Test
     public void a_cell_in_an_empty_grid_has_0_neighbor() {
-        assertThat(GameOfLifeGrid.emptyGrid(3).neighbourCount(1, 1)).isEqualTo(0);
+        assertThat(GameOfLifeGrid.emptyGrid(3).neighbourCount(new Position(1, 1))).isEqualTo(0);
     }
 
     @Test
     public void a_cell_with_horizontal_line_of_neighbor_has_2_neighbor() {
         GameOfLifeGrid grid = GameOfLifeGrid.emptyGrid(3);
-        grid.makeAlive(0,1);
-        grid.makeAlive(2,1);
-        assertThat(grid.neighbourCount(1, 1)).isEqualTo(2);
+        grid.makeAlive(new Position(0, 1));
+        grid.makeAlive(new Position(2, 1));
+        assertThat(grid.neighbourCount(new Position(1, 1))).isEqualTo(2);
     }
 
     @Test
     public void a_cell_with_vertical_line_of_neighbor_has_2_neighbor() {
         GameOfLifeGrid grid = GameOfLifeGrid.emptyGrid(3);
-        grid.makeAlive(1,0);
-        grid.makeAlive(1,2);
-        assertThat(grid.neighbourCount(1, 1)).isEqualTo(2);
+        grid.makeAlive(new Position(1, 0));
+        grid.makeAlive(new Position(1, 2));
+        assertThat(grid.neighbourCount(new Position(1, 1))).isEqualTo(2);
     }
 
     @Test
     public void a_cell_with_a_full_grid_has_8_neighbor() {
         GameOfLifeGrid grid = GameOfLifeGrid.fullGrid();
-        assertThat(grid.neighbourCount(1, 1)).isEqualTo(8);
+        assertThat(grid.neighbourCount(new Position(1, 1))).isEqualTo(8);
     }
 
     //passing generation
     @Test
     public void is_game_of_life_blink() {
         GameOfLifeGrid grid = GameOfLifeGrid.emptyGrid(5);
-        grid.makeAlive(2,1);
-        grid.makeAlive(2,2);
-        grid.makeAlive(2, 3);
+        grid.makeAlive(new Position(2, 1));
+        grid.makeAlive(new Position(2, 2));
+        grid.makeAlive(new Position(2, 3));
 
         GameOfLifeGrid newGen = grid.nextGeneration();
 
-        assertThat(newGen.cellAt(2,1)).isEqualTo(DEAD);
-        assertThat(newGen.cellAt(1,2)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(2, 1))).isEqualTo(DEAD);
+        assertThat(newGen.cellAt(new Position(1, 2))).isEqualTo(ALIVE);
 
-        assertThat(newGen.cellAt(2,2)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(2, 2))).isEqualTo(ALIVE);
 
-        assertThat(newGen.cellAt(2,3)).isEqualTo(DEAD);
-        assertThat(newGen.cellAt(3, 2)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(2, 3))).isEqualTo(DEAD);
+        assertThat(newGen.cellAt(new Position(3, 2))).isEqualTo(ALIVE);
     }
 
     @Test
     public void is_game_of_life_stay_the_same() {
         GameOfLifeGrid grid = GameOfLifeGrid.emptyGrid(5);
-        grid.makeAlive(2,1);
-        grid.makeAlive(1,2);
-        grid.makeAlive(1,1);
-        grid.makeAlive(2,2);
+        grid.makeAlive(new Position(2, 1));
+        grid.makeAlive(new Position(1, 2));
+        grid.makeAlive(new Position(1, 1));
+        grid.makeAlive(new Position(2, 2));
 
         GameOfLifeGrid newGen = grid.nextGeneration();
 
-        assertThat(newGen.cellAt(2,1)).isEqualTo(ALIVE);
-        assertThat(newGen.cellAt(1,2)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(2, 1))).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(1, 2))).isEqualTo(ALIVE);
 
-        assertThat(newGen.cellAt(1,1)).isEqualTo(ALIVE);
-        assertThat(newGen.cellAt(2,2)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(1, 1))).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(new Position(2, 2))).isEqualTo(ALIVE);
     }
 
 
