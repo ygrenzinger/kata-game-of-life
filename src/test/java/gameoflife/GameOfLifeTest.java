@@ -110,7 +110,24 @@ public class GameOfLifeTest {
         assertThat(newGen.cellAt(2,2)).isEqualTo(ALIVE);
 
         assertThat(newGen.cellAt(2,3)).isEqualTo(DEAD);
-        assertThat(newGen.cellAt(3,2)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(3, 2)).isEqualTo(ALIVE);
+    }
+
+    @Test
+    public void is_game_of_life_stay_the_same() {
+        GameOfLifeGrid grid = GameOfLifeGrid.emptyGrid(5);
+        grid.makeAlive(2,1);
+        grid.makeAlive(1,2);
+        grid.makeAlive(1,1);
+        grid.makeAlive(2,2);
+
+        GameOfLifeGrid newGen = grid.nextGeneration();
+
+        assertThat(newGen.cellAt(2,1)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(1,2)).isEqualTo(ALIVE);
+
+        assertThat(newGen.cellAt(1,1)).isEqualTo(ALIVE);
+        assertThat(newGen.cellAt(2,2)).isEqualTo(ALIVE);
     }
 
 

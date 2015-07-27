@@ -3,7 +3,7 @@ package gameoflife;
 public enum CellState {
     ALIVE, DEAD;
 
-    public CellState nextGeneration(int nbOfNeighbors) {
+    public CellState nextGeneration(long nbOfNeighbors) {
         if (nbOfNeighbors == 2) {
             return this;
         }

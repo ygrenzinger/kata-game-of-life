@@ -1,5 +1,8 @@
 package gameoflife;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static gameoflife.CellState.ALIVE;
 import static gameoflife.CellState.DEAD;
 
@@ -27,12 +30,12 @@ public class GameOfLifeGrid {
         return new GameOfLifeGrid(newGrid);
     }
 
-    public void makeAlive(int x, int y) {
-        grid[x][y] = ALIVE;
+    public void makeAlive(int row, int column) {
+        grid[row][column] = ALIVE;
     }
 
-    public CellState cellAt(int x, int y) {
-        return grid[x][y];
+    public CellState cellAt(int row, int column) {
+        return grid[row][column];
     }
 
     public static GameOfLifeGrid fullGrid() {
@@ -41,16 +44,20 @@ public class GameOfLifeGrid {
 
 
 
-    public int neighbourCount(int x, int y) {
-        int count = 0;
+    public long neighbourCount(int row, int column) {
+        return buildNeigbours(row, column).stream().filter(cellState -> cellState == ALIVE).count();
+    }
+
+    private List<CellState> buildNeigbours(int row, int column) {
+        List<CellState> cells = new ArrayList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if (!(i == 0 && j == 0) && grid[x+i][y+j] == ALIVE) {
-                    count++;
+                if (!(i == 0 && j == 0)) {
+                    cells.add(grid[row+i][column+j]);
                 }
             }
         }
-        return count;
+        return cells;
     }
 
     public GameOfLifeGrid nextGeneration() {
@@ -58,7 +65,7 @@ public class GameOfLifeGrid {
         for (int i = 1; i < grid.length-1; i++) {
 
             for (int j = 1; j < grid.length-1; j++) {
-                int count =   this.neighbourCount(i, j);
+                long count =   this.neighbourCount(i, j);
                 newGen.grid[i][j] = this.grid[i][j].nextGeneration(count);
             }
         }
@@ -67,11 +74,17 @@ public class GameOfLifeGrid {
 
     private GameOfLifeGrid copy() {
         GameOfLifeGrid copy = emptyGrid(grid.length);
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid.length; j++) {
-                    copy.grid[i][j] = grid[i][j];
-            }
-        }
+        copyRows(copy);
         return copy;
+    }
+
+    private void copyRows(GameOfLifeGrid copy) {
+        for (int i = 0; i < grid.length; i++) {
+            copyColumns(copy, i);
+        }
+    }
+
+    private void copyColumns(GameOfLifeGrid copy, int row) {
+        System.arraycopy(grid[row], 0, copy.grid[row], 0, grid[row].length);
     }
 }
